@@ -1,17 +1,14 @@
-import { useState, useEffect, useContext } from "react";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
-import { LoginContext } from "./Context/ContextProvider";
-import Header from "./Components/Header";
-import Register from "./Components/Register";
-import Login from "./Components/Login";
-import Dashboard from "./Components/Dashboard";
-import Error from "./Components/Error";
+import { useNavigate } from "react-router-dom";
+import { LoginContext } from "../Context/ContextProvider";
 
-function App() {
-  const [data, setData] = useState(false);
+export default function Dashboard() {
   const { logindata, setLoginData } = useContext(LoginContext);
+
+  const [data, setData] = useState(false);
+
   const history = useNavigate();
 
   const DashboardValid = async () => {
@@ -28,7 +25,7 @@ function App() {
     const data = await res.json();
 
     if (data.status === 401 || !data) {
-      console.log("user not valid");
+      history("*");
     } else {
       setLoginData(data);
       history("/dash");
@@ -39,22 +36,25 @@ function App() {
     setTimeout(() => {
       DashboardValid();
       setData(true);
-    }, 2000);
+    }, 1000);
   }, []);
-
   return (
     <>
       {data ? (
-        <>
-          <Header />
-
-          <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/dash" element={<Dashboard />} />
-            <Route path="*" element={<Error />} />
-          </Routes>
-        </>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <img
+            src="./man.png"
+            style={{ width: "200px", marginTop: 20 }}
+            alt=""
+          />
+          <h1>User Email:{logindata ? logindata.ValidUserOne.email : ""}</h1>
+        </div>
       ) : (
         <Box
           sx={{
@@ -71,5 +71,3 @@ function App() {
     </>
   );
 }
-
-export default App;
